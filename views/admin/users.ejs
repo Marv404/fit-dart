@@ -1,0 +1,60 @@
+<%- include('../partials/header', { title: 'User' }) %>
+<h1>User</h1>
+<p><a href="/admin">&larr; Admin</a></p>
+
+<% if (errors.length) { %>
+  <div class="flash err" role="alert"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div>
+<% } %>
+
+<section class="card">
+  <h2>Neuer User</h2>
+  <form method="post" action="/admin/users" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="two">
+      <label>Name <input type="text" name="name" maxlength="30" value="<%= form ? form.name : '' %>" autocomplete="off" required></label>
+      <label>Startpasswort (mind. 10 Zeichen) <input type="text" name="password" minlength="10" autocomplete="off" required></label>
+    </div>
+    <label>Rolle
+      <select name="role">
+        <option value="player" <%= form && form.role === 'player' ? 'selected' : '' %>>Player</option>
+        <option value="admin" <%= form && form.role === 'admin' ? 'selected' : '' %>>Admin</option>
+      </select>
+    </label>
+    <button class="btn primary" type="submit">Anlegen</button>
+  </form>
+</section>
+
+<h2>Alle User</h2>
+<% users.forEach(function (u) { %>
+  <section class="card <%= u.aktiv ? '' : 'inactive' %>">
+    <div class="user-head">
+      <strong><%= u.name %></strong>
+      <span class="tag"><%= u.role === 'admin' ? 'Admin' : 'Player' %></span>
+      <% if (!u.aktiv) { %><span class="tag off">gesperrt</span><% } %>
+      <% if (u.id === user.id) { %><span class="tag">du</span><% } %>
+    </div>
+
+    <form method="post" action="/admin/users/<%= u.id %>/role" class="inline">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <select name="role" aria-label="Rolle von <%= u.name %>">
+        <option value="player" <%= u.role === 'player' ? 'selected' : '' %>>Player</option>
+        <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+      </select>
+      <button class="btn" type="submit">Rolle setzen</button>
+    </form>
+
+    <form method="post" action="/admin/users/<%= u.id %>/password" class="inline">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="text" name="password" minlength="10" placeholder="Neues Passwort" autocomplete="off" aria-label="Neues Passwort für <%= u.name %>" required>
+      <button class="btn" type="submit">Passwort setzen</button>
+    </form>
+
+    <% if (u.id !== user.id) { %>
+      <form method="post" action="/admin/users/<%= u.id %>/toggle" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn <%= u.aktiv ? 'danger' : '' %>" type="submit"><%= u.aktiv ? 'Sperren' : 'Wieder aktivieren' %></button>
+      </form>
+    <% } %>
+  </section>
+<% }) %>
+<%- include('../partials/footer') %>

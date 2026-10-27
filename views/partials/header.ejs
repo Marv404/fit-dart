@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title><%= locals.title ? locals.title + ' · ' : '' %>Dart</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/htmx.min.js" defer></script>
+</head>
+<body hx-headers='{"x-csrf-token":"<%= csrfToken %>"}'>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="/">&#127919; FIT Dart Rangliste</a>
+    <% if (user) { %>
+    <nav aria-label="Hauptnavigation">
+      <a href="/" class="<%= path === '/' ? 'on' : '' %>">Start</a>
+      <a href="/matches/new" class="<%= path === '/matches/new' ? 'on' : '' %>">Erfassen</a>
+      <a href="/matches" class="<%= path === '/matches' ? 'on' : '' %>">Verlauf</a>
+      <a href="/ranking" class="<%= path.startsWith('/ranking') ? 'on' : '' %>">Rangliste</a>
+      <a href="/stats" class="<%= path.startsWith('/stats') ? 'on' : '' %>">Statistik</a>
+      <% if (user.role === 'admin') { %><a href="/admin" class="<%= path.startsWith('/admin') ? 'on' : '' %>">Admin</a><% } %>
+    </nav>
+    <div class="who">
+      <a href="/account"><%= user.name %></a>
+      <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="link" type="submit">Abmelden</button>
+      </form>
+    </div>
+    <% } %>
+  </div>
+</header>
+<main class="wrap">
+<% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.text %></div><% } %>

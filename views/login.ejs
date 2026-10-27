@@ -1,0 +1,16 @@
+<%- include('partials/header', { title: 'Anmelden' }) %>
+<section class="card narrow">
+  <h1>Anmelden</h1>
+  <% if (error) { %><div class="flash err" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/login" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Name
+      <input type="text" name="name" autocomplete="username" autocapitalize="none" required autofocus>
+    </label>
+    <label>Passwort
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn primary" type="submit">Anmelden</button>
+  </form>
+</section>
+<%- include('partials/footer') %>

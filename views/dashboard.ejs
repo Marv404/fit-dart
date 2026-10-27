@@ -1,0 +1,28 @@
+<%- include('partials/header', { title: 'Start' }) %>
+<h1>Hallo <%= user.name %></h1>
+
+<section class="stats" aria-label="Deine Statistik">
+  <div class="card stat"><span class="n"><%= stats.games %></span><span class="l">Spiele</span></div>
+  <div class="card stat"><span class="n"><%= stats.wins %></span><span class="l">Siege</span></div>
+  <div class="card stat"><span class="n"><%= pct(stats.quote) %></span><span class="l">Siegquote</span></div>
+  <div class="card stat"><span class="n"><%= num1(stats.avg_win_rounds) %></span><span class="l">&Oslash; Runden pro Sieg</span></div>
+</section>
+
+<% if (stats.visits) { %>
+<section class="stats" aria-label="Deine Aufnahmen-Statistik">
+  <div class="card stat"><span class="n"><%= num1(stats.avg) %></span><span class="l">&Oslash; pro Aufnahme</span></div>
+  <div class="card stat"><span class="n"><%= stats.n180 %></span><span class="l">180er</span></div>
+  <div class="card stat"><span class="n"><%= stats.best_finish === null ? '–' : stats.best_finish %></span><span class="l">Höchstes Finish</span></div>
+  <div class="card stat"><span class="n"><%= stats.best_leg === null ? '–' : stats.best_leg %></span><span class="l">Bestes Leg (Runden)</span></div>
+</section>
+<% } %>
+
+<p>
+  <a class="btn primary" href="/matches/new">Spiel erfassen</a>
+  <a class="btn" href="/stats">Mehr Statistik</a>
+</p>
+
+<h2>Deine letzten Spiele</h2>
+<%- include('partials/match-list', { rows: recent, page: 1, pages: 1, queryBase: '' }) %>
+<% if (recent.length) { %><p><a href="/matches?mine=1">Alle deine Spiele ansehen</a></p><% } %>
+<%- include('partials/footer') %>

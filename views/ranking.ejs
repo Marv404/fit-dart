@@ -1,0 +1,49 @@
+<%- include('partials/header', { title: 'Rangliste' }) %>
+<h1>Rangliste</h1>
+
+<% if (!mode) { %>
+  <p class="muted">Es gibt noch keine Spielmodi.</p>
+<% } else { %>
+  <nav class="tabs" aria-label="Spielmodus">
+    <% modes.forEach(function (m) { %>
+      <a href="/ranking?mode=<%= m.id %>" class="<%= m.id === mode.id ? 'on' : '' %>"><%= m.name %><%= m.aktiv ? '' : ' (inaktiv)' %></a>
+    <% }) %>
+  </nav>
+
+  <% if (!ranking.ranked.length) { %>
+    <p class="muted">In diesem Modus wurde noch kein Spiel erfasst.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="rank">
+        <thead>
+          <tr><th>#</th><th>Spieler</th><th class="num">Spiele</th><th class="num">Siege</th><th class="num">Quote</th><th class="num">&Oslash; Runden/Sieg</th><% if (ranking.hasTurns) { %><th class="num">&Oslash; Aufn.</th><th class="num">180er</th><% } %></tr>
+        </thead>
+        <tbody>
+          <% ranking.ranked.forEach(function (r) { %>
+            <tr class="<%= r.user_id === user.id ? 'me' : '' %>">
+              <td><%= r.rank %></td>
+              <td><%= r.name %></td>
+              <td class="num"><%= r.games %></td>
+              <td class="num"><%= r.wins %></td>
+              <td class="num"><%= pct(r.quote) %></td>
+              <td class="num"><%= num1(r.avg_win_rounds) %></td>
+              <% if (ranking.hasTurns) { %><td class="num"><%= num1(r.avg) %></td><td class="num"><%= r.n180 %></td><% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <p class="muted small"><% if (ranking.minGames > 1) { %>Gewertet wird ab <%= ranking.minGames %> Spielen. <% } %>Bei gleicher Quote entscheidet der tiefere Rundendurchschnitt in gewonnenen Spielen.</p>
+
+  <% if (ranking.unranked.length) { %>
+    <h2>Noch nicht gewertet</h2>
+    <ul class="plain">
+      <% ranking.unranked.forEach(function (r) { %>
+        <li><%= r.name %> <span class="muted">· <%= r.games %> von <%= ranking.minGames %> Spielen</span></li>
+      <% }) %>
+    </ul>
+  <% } %>
+<% } %>
+<%- include('partials/footer') %>

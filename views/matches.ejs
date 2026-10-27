@@ -1,0 +1,21 @@
+<%- include('partials/header', { title: 'Verlauf' }) %>
+<h1>Spielverlauf</h1>
+
+<form class="filters card" method="get" action="/matches"
+      hx-get="/matches" hx-target="#match-list" hx-trigger="change" hx-push-url="true">
+  <label>Modus
+    <select name="mode">
+      <option value="">Alle</option>
+      <% modes.forEach(function (m) { %>
+        <option value="<%= m.id %>" <%= modeId === m.id ? 'selected' : '' %>><%= m.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label class="check"><input type="checkbox" name="mine" value="1" <%= onlyMine ? 'checked' : '' %>> Nur meine Spiele</label>
+  <noscript><button class="btn" type="submit">Filtern</button></noscript>
+</form>
+
+<div id="match-list">
+  <%- include('partials/match-list') %>
+</div>
+<%- include('partials/footer') %>

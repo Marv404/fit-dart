@@ -1,0 +1,16 @@
+<%- include('../partials/header', { title: 'Admin' }) %>
+<h1>Admin</h1>
+
+<section class="stats">
+  <a class="card stat link" href="/admin/users"><span class="n"><%= counts.users %></span><span class="l">aktive User</span></a>
+  <a class="card stat link" href="/admin/modes"><span class="n"><%= counts.modes %></span><span class="l">aktive Spielmodi</span></a>
+  <a class="card stat link" href="/matches"><span class="n"><%= counts.matches %></span><span class="l">Spiele (korrigieren)</span></a>
+</section>
+
+<p>
+  <a class="btn" href="/admin/users">User verwalten</a>
+  <a class="btn" href="/admin/modes">Spielmodi verwalten</a>
+  <a class="btn" href="/admin/export.csv">CSV-Export</a>
+</p>
+<p class="muted small">Spiele korrigierst oder löschst du im Spielverlauf über &laquo;Ändern&raquo;.</p>
+<%- include('../partials/footer') %>

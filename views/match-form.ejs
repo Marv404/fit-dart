@@ -1,0 +1,61 @@
+<%- include('partials/header', { title: title }) %>
+<h1><%= title %></h1>
+
+<% if (errors.length) { %>
+  <div class="flash err" role="alert">
+    <ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="<%= action %>" class="card form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <div class="two">
+    <label>Datum
+      <input type="date" name="datum" value="<%= match.datum %>" max="<%= today() %>" required>
+    </label>
+    <label>Spielmodus
+      <select name="game_mode_id" required>
+        <% modes.forEach(function (m) { %>
+          <option value="<%= m.id %>" <%= match.game_mode_id === m.id ? 'selected' : '' %>><%= m.name %></option>
+        <% }) %>
+      </select>
+    </label>
+  </div>
+
+  <fieldset>
+    <legend>Spieler, Runden und Sieger</legend>
+    <div id="rows">
+      <% rows.forEach(function (row, i) { %>
+        <%- include('partials/player-row', { i: i, row: row, winner: winner, users: users, maxRows: maxRows, withOob: false }) %>
+      <% }) %>
+    </div>
+    <% if (rows.length < maxRows) { %>
+      <button id="add-row" type="button" class="btn" hx-get="/matches/row?i=<%= rows.length %>" hx-target="#rows" hx-swap="beforeend">+ Spieler</button>
+    <% } else { %>
+      <span id="add-row"></span>
+    <% } %>
+    <p class="muted small hint">
+      Aufnahmen sind optional: die Punkte jeder Runde, getrennt durch Leerzeichen (Bust = 0).
+      Sie ergeben Average und 180er in der Statistik. Ohne Aufnahmen trägst du die 180er einfach im Feld «180er» ein. Beim Sieger müssen sie genau den Startscore ergeben, die letzte Aufnahme ist das Finish.
+      Sind Aufnahmen eingetragen, darf das Feld «Runden» leer bleiben.
+    </p>
+  </fieldset>
+
+  <button class="btn primary" type="submit">Speichern</button>
+  <a class="btn" href="/matches">Abbrechen</a>
+</form>
+
+<script src="/winner.js" defer></script>
+
+<% if (canDelete) { %>
+  <details class="danger card">
+    <summary>Spiel löschen&hellip;</summary>
+    <p>Das Spiel wird endgültig entfernt und fliesst nicht mehr in die Rangliste ein.</p>
+    <form method="post" action="/matches/<%= match.id %>/delete">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn danger" type="submit">Ja, endgültig löschen</button>
+    </form>
+  </details>
+<% } %>
+<%- include('partials/footer') %>

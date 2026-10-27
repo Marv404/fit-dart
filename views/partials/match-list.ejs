@@ -1,0 +1,36 @@
+<%
+  const link = function (n) { return '/matches?' + [queryBase, 'page=' + n].filter(Boolean).join('&'); };
+%>
+<% if (!rows.length) { %>
+  <p class="muted">Keine Spiele gefunden.</p>
+<% } else { %>
+  <ul class="matches">
+    <% rows.forEach(function (m) { %>
+      <li class="card match">
+        <div class="match-head">
+          <strong><%= m.modus %></strong>
+          <span class="muted"><%= dateCH(m.datum) %> · #<%= m.id %></span>
+          <% if (m.editable) { %><a class="small" href="/matches/<%= m.id %>/edit">Ändern</a><% } %>
+        </div>
+        <ol class="players">
+          <% m.players.forEach(function (p) { %>
+            <li class="<%= p.won ? 'won' : '' %>">
+              <span><%= p.name %></span>
+              <span>
+                <%= p.rounds %> Runden<%= p.won ? ' · Sieg' : '' %>
+                <% if (p.visits || p.n180) { %><span class="muted"><%= p.visits ? '· Ø ' + num1(p.avg) : '' %><%= p.n180 ? ' · ' + p.n180 + '×180' : '' %></span><% } %>
+              </span>
+            </li>
+          <% }) %>
+        </ol>
+      </li>
+    <% }) %>
+  </ul>
+  <% if (pages > 1) { %>
+    <nav class="pager" aria-label="Seiten">
+      <% if (page > 1) { %><a href="<%= link(page - 1) %>">&larr; Neuer</a><% } %>
+      <span class="muted">Seite <%= page %> von <%= pages %></span>
+      <% if (page < pages) { %><a href="<%= link(page + 1) %>">Älter &rarr;</a><% } %>
+    </nav>
+  <% } %>
+<% } %>

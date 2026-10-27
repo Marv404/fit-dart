@@ -1,0 +1,23 @@
+<%- include('partials/header', { title: 'Konto' }) %>
+<h1>Mein Konto</h1>
+
+<section class="card narrow">
+  <h2>Passwort ändern</h2>
+  <% if (errors.length) { %>
+    <div class="flash err" role="alert"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div>
+  <% } %>
+  <form method="post" action="/account/password" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Aktuelles Passwort
+      <input type="password" name="current" autocomplete="current-password" required>
+    </label>
+    <label>Neues Passwort (mind. 10 Zeichen)
+      <input type="password" name="password" autocomplete="new-password" minlength="10" required>
+    </label>
+    <label>Neues Passwort wiederholen
+      <input type="password" name="password2" autocomplete="new-password" minlength="10" required>
+    </label>
+    <button class="btn primary" type="submit">Speichern</button>
+  </form>
+</section>
+<%- include('partials/footer') %>
