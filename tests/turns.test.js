@@ -99,6 +99,21 @@ test('Verlierer darf den Startscore nicht erreichen', () => {
   assert.ok(errors.some((e) => /nicht als Sieger gewählt/.test(e)));
 });
 
+test('Verlierer darf nach dem Sieger fertig werfen (mehr Runden)', () => {
+  const { db, a, b } = setup();
+  // Sieger: 5 Runden. Zweiter wirft 501 in 7 Runden (Straight Out, Finish 40)
+  const ok = validateMatch(body(a, b, WIN.join(' '), '100 100 100 100 41 20 40', { game_mode_id: '3' }), db);
+  assert.deepEqual(ok.errors, []);
+
+  // Gleich viele Runden wie der Sieger: muss auch Sieger sein
+  const tie = validateMatch(body(a, b, WIN.join(' '), WIN.join(' ')), db);
+  assert.ok(tie.errors.some((e) => /5 Runden erreicht, ist aber nicht als Sieger/.test(e)));
+
+  // Zu spät fertig, aber 41 ist bei Double Out kein Finish
+  const bogus = validateMatch(body(a, b, WIN.join(' '), '100 100 100 100 60 41'), db);
+  assert.ok(bogus.errors.some((e) => /Zeile 2: 41 ist als letzte Aufnahme kein gültiges Finish/.test(e)));
+});
+
 test('unmögliche Aufnahme wird in der Zeile gemeldet', () => {
   const { db, a, b } = setup();
   const { errors } = validateMatch(body(a, b, '179 100', ''), db);
@@ -136,6 +151,22 @@ test('Kennzahlen: Average, 180er, Finish, bestes Leg', () => {
   assert.equal(sb.best_finish, 170);
   assert.equal(sb.best_leg, 3);
   assert.equal(sb.avg, (270 + 501) / 8);
+});
+
+test('Kennzahlen: Punkte pro Wurf, Aufnahme-Verteilung, erste drei Aufnahmen', () => {
+  const { db, a } = seedStats();
+  const s = getUserStats(db, a);
+  assert.equal(s.per_dart, ((501 + 300) / 8) / 3);
+  assert.equal(s.best_visit, 180);
+  assert.equal(s.v60, 6); // 180 140 100 und 100 100 100; 41 und 40 zählen nicht
+  assert.equal(s.v100, 6);
+  assert.equal(s.v140, 2);
+  assert.equal(s.first9, (180 + 140 + 100 + 100 + 100 + 100) / 6);
+
+  const none = getUserStats(db, a, 2);
+  assert.equal(none.per_dart, null);
+  assert.equal(none.best_visit, null);
+  assert.equal(none.v100, 0);
 });
 
 test('Kennzahlen nach Modus gefiltert', () => {
