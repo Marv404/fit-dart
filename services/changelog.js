@@ -4,6 +4,16 @@
 // und `version` in package.json auf dieselbe Nummer setzen.
 const CHANGELOG = [
   {
+    version: '1.1.1',
+    datum: '2026-10-28',
+    neu: [],
+    geaendert: [
+      'Spieler dürfen nach dem Sieger zu Ende werfen: Wer den Startscore mit mehr Runden als der Sieger erreicht, wird nicht mehr abgelehnt.',
+      'Wer den Startscore mit gleich vielen oder weniger Runden erreicht, muss auch als Sieger markiert sein. Die Fehlermeldung nennt jetzt die Rundenzahl.',
+      'Aufnahmen-Rechner: breiteres Eingabefeld («Punkte») und kompaktere Anzeige.',
+    ],
+  },
+  {
     version: '1.1.0',
     datum: '2026-10-28',
     neu: [
