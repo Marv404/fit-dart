@@ -15,6 +15,12 @@
   <div class="card stat"><span class="n"><%= stats.best_leg === null ? '–' : stats.best_leg %></span><span class="l">Bestes Leg (Runden)</span></div>
   <div class="card stat"><span class="n"><%= num1(stats.avg_win_rounds) %></span><span class="l">&Oslash; Runden pro Sieg</span></div>
   <div class="card stat"><span class="n"><%= num1(stats.avg) %></span><span class="l">&Oslash; pro Aufnahme</span></div>
+  <div class="card stat"><span class="n"><%= num2(stats.per_dart) %></span><span class="l">&Oslash; Punkte pro Wurf</span></div>
+  <div class="card stat"><span class="n"><%= num1(stats.first9) %></span><span class="l">&Oslash; erste 3 Aufnahmen</span></div>
+  <div class="card stat"><span class="n"><%= stats.best_visit === null ? '–' : stats.best_visit %></span><span class="l">Beste Aufnahme</span></div>
+  <div class="card stat"><span class="n"><%= stats.v60 %></span><span class="l">Aufnahmen 60+</span></div>
+  <div class="card stat"><span class="n"><%= stats.v100 %></span><span class="l">Aufnahmen 100+</span></div>
+  <div class="card stat"><span class="n"><%= stats.v140 %></span><span class="l">Aufnahmen 140+</span></div>
   <div class="card stat"><span class="n"><%= stats.n180 %></span><span class="l">180er</span></div>
   <div class="card stat"><span class="n"><%= stats.best_finish === null ? '–' : stats.best_finish %></span><span class="l">Höchstes Finish</span></div>
   <div class="card stat"><span class="n"><%= stats.legs_with_turns %></span><span class="l">Spiele mit Aufnahmen</span></div>
@@ -30,13 +36,14 @@
   <div class="table-wrap">
     <table class="rank">
       <thead>
-        <tr><th>Spieler</th><th class="num">&Oslash; Aufnahme</th><th class="num">180er</th><th class="num">Höchstes Finish</th><th class="num">Spiele</th></tr>
+        <tr><th>Spieler</th><th class="num">&Oslash; Aufnahme</th><th class="num">&Oslash; pro Wurf</th><th class="num">180er</th><th class="num">Höchstes Finish</th><th class="num">Spiele</th></tr>
       </thead>
       <tbody>
         <% leaders.forEach(function (l) { %>
           <tr class="<%= l.user_id === user.id ? 'me' : '' %>">
             <td><%= l.name %></td>
             <td class="num"><%= num1(l.avg) %></td>
+            <td class="num"><%= num2(l.per_dart) %></td>
             <td class="num"><%= l.n180 %></td>
             <td class="num"><%= l.best_finish === null ? '–' : l.best_finish %></td>
             <td class="num"><%= l.legs || '–' %></td>
@@ -45,6 +52,6 @@
       </tbody>
     </table>
   </div>
-  <p class="muted small">Average, Finish und Spiele zählen nur Spiele mit eingetragenen Aufnahmen, 180er zählen immer. Eine Checkout-Quote gibt es nicht, weil dafür die Darts auf Doppel pro Runde nötig wären. Stattdessen zeigt die Tabelle das höchste Finish.</p>
+  <p class="muted small">Average, Finish und Spiele zählen nur Spiele mit eingetragenen Aufnahmen, 180er zählen immer. Eine Checkout-Quote gibt es nicht, weil dafür die Darts auf Doppel pro Runde nötig wären. Stattdessen zeigt die Tabelle das höchste Finish. «Pro Wurf» ist der Average geteilt durch 3 Darts.</p>
 <% } %>
 <%- include('partials/footer') %>

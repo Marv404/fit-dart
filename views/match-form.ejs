@@ -17,7 +17,7 @@
     <label>Spielmodus
       <select name="game_mode_id" required>
         <% modes.forEach(function (m) { %>
-          <option value="<%= m.id %>" <%= match.game_mode_id === m.id ? 'selected' : '' %>><%= m.name %></option>
+          <option value="<%= m.id %>" data-start="<%= m.start_score %>" data-dout="<%= m.double_out ? 1 : 0 %>" <%= match.game_mode_id === m.id ? 'selected' : '' %>><%= m.name %></option>
         <% }) %>
       </select>
     </label>
@@ -27,7 +27,7 @@
     <legend>Spieler, Runden und Sieger</legend>
     <div id="rows">
       <% rows.forEach(function (row, i) { %>
-        <%- include('partials/player-row', { i: i, row: row, winner: winner, users: users, maxRows: maxRows, withOob: false }) %>
+        <%- include('partials/player-row', { i: i, row: row, winners: winners, users: users, maxRows: maxRows, withOob: false }) %>
       <% }) %>
     </div>
     <% if (rows.length < maxRows) { %>
@@ -35,6 +35,10 @@
     <% } else { %>
       <span id="add-row"></span>
     <% } %>
+    <p class="muted small hint">
+      Rechner: Gib pro Spieler ein, wie viel er geworfen hat (Enter oder «+ Aufnahme»). Der Rest wird mitgerechnet, überworfen zählt als 0.
+      Sobald ein Spieler auf 0 ist, ist er fertig und seine Runden werden gezählt. Haben mehrere Spieler gleich viele Runden, gibt es mehrere Sieger.
+    </p>
     <p class="muted small hint">
       Aufnahmen sind optional: die Punkte jeder Runde, getrennt durch Leerzeichen (Bust = 0).
       Sie ergeben Average und 180er in der Statistik. Ohne Aufnahmen trägst du die 180er einfach im Feld «180er» ein. Beim Sieger müssen sie genau den Startscore ergeben, die letzte Aufnahme ist das Finish.
@@ -46,7 +50,7 @@
   <a class="btn" href="/matches">Abbrechen</a>
 </form>
 
-<script src="/winner.js" defer></script>
+<script src="/match-form.js" defer></script>
 
 <% if (canDelete) { %>
   <details class="danger card">

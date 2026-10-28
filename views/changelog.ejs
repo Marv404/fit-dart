@@ -1,0 +1,18 @@
+<%- include('partials/header', { title: 'Changelog' }) %>
+<h1>Changelog</h1>
+
+<% entries.forEach(function (e) { %>
+  <section class="card">
+    <h2>Version <%= e.version %><%= e.version === locals.version ? ' (aktuell)' : '' %></h2>
+    <% if (e.datum) { %><p class="muted small"><%= dateCH(e.datum) %></p><% } %>
+    <% if (e.neu.length) { %>
+      <h3>Neu</h3>
+      <ul><% e.neu.forEach(function (t) { %><li><%= t %></li><% }) %></ul>
+    <% } %>
+    <% if (e.geaendert.length) { %>
+      <h3>Geändert</h3>
+      <ul><% e.geaendert.forEach(function (t) { %><li><%= t %></li><% }) %></ul>
+    <% } %>
+  </section>
+<% }) %>
+<%- include('partials/footer') %>
