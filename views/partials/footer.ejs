@@ -1,3 +1,6 @@
 </main>
+<% if (locals.user && locals.version) { %>
+<footer class="wrap foot muted small"><a href="/changelog">Version <%= locals.version %></a></footer>
+<% } %>
 </body>
 </html>

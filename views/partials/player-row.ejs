@@ -6,8 +6,15 @@
     <% }) %>
   </select>
   <input type="number" name="rounds" min="1" max="99" inputmode="numeric" placeholder="Runden" aria-label="Runden Spieler <%= i + 1 %>" value="<%= row.rounds %>">
-  <label class="win"><input type="radio" name="winner" value="<%= i %>" <%= winner === i ? 'checked' : '' %>> Sieger</label>
+  <label class="win"><input type="checkbox" name="winner" value="<%= i %>" <%= winners.includes(i) ? 'checked' : '' %>> Sieger</label>
   <label class="n180">180er <input type="number" name="n180" min="0" max="99" inputmode="numeric" placeholder="0" aria-label="Anzahl 180er Spieler <%= i + 1 %>" value="<%= row.n180 %>"></label>
+  <div class="calc" data-calc hidden>
+    <span class="calc-status" data-status role="status"></span>
+    <input type="number" class="calc-in" min="0" max="180" inputmode="numeric" placeholder="Geworfen" aria-label="Geworfene Punkte Spieler <%= i + 1 %>">
+    <button type="button" class="btn calc-add">+ Aufnahme</button>
+    <button type="button" class="btn calc-undo" title="Letzte Aufnahme entfernen" aria-label="Letzte Aufnahme entfernen">&#8630;</button>
+    <span class="calc-msg muted small" data-msg></span>
+  </div>
   <input type="text" name="turns" class="turns" inputmode="numeric" autocomplete="off"
          placeholder="Aufnahmen (optional), z. B. 60 100 140 180 21"
          aria-label="Aufnahmen Spieler <%= i + 1 %>" value="<%= row.turns %>">
