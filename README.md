@@ -18,7 +18,7 @@ Entwicklung: `npm run dev` (Neustart bei Änderungen). Tests: `npm test`.
 
 ## Funktionen
 
-Aktuelle Version: 1.1.0, Änderungen siehe Changelog-Seite (`/changelog`, Daten in `services/changelog.js`). Bei einem Release dort einen Eintrag ergänzen und `version` in `package.json` anpassen.
+Aktuelle Version: 1.1.1, Änderungen siehe Changelog-Seite (`/changelog`, Daten in `services/changelog.js`). Bei einem Release dort einen Eintrag ergänzen und `version` in `package.json` anpassen.
 
 - Login mit Rollen Player und Admin, Rate-Limit, CSRF-Schutz
 - Spiel erfassen: Modus, Datum, 2 bis 8 Spieler mit Runden, ein Sieger (bei gleicher Rundenzahl mehrere Sieger)
