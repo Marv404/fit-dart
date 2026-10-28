@@ -43,7 +43,7 @@ function isValidFinish(points, doubleOut) {
 
 /**
  * Prüft das Formular "Spiel erfassen/ändern".
- * Formfelder: datum, game_mode_id, user_id[], rounds[], turns[] (optional), n180[] (optional), winner (Zeilenindex).
+ * Formfelder: datum, game_mode_id, user_id[], rounds[], turns[] (optional), n180[] (optional), winner (Zeilenindex, mehrfach bei Gleichstand).
  * Leere Zeilen (kein Spieler gewählt) werden ignoriert.
  * Sind Aufnahmen angegeben, darf `rounds` leer sein (wird aus der Anzahl abgeleitet).
  */
@@ -65,7 +65,8 @@ function validateMatch(body, db, { allowInactiveModeId = null } = {}) {
   const rounds = toArray(body.rounds);
   const turnsRaw = toArray(body.turns);
   const n180Raw = toArray(body.n180);
-  const winnerIdx = Number.parseInt(body.winner, 10);
+  // Bei gleicher Rundenzahl dürfen mehrere Sieger angekreuzt sein
+  const winnerIdx = new Set(toArray(body.winner).map((w) => Number.parseInt(w, 10)).filter(Number.isInteger));
 
   const players = [];
   const seen = new Set();
@@ -130,11 +131,15 @@ function validateMatch(body, db, { allowInactiveModeId = null } = {}) {
       return;
     }
 
-    players.push({ idx, user_id: uid, rounds: n, won: idx === winnerIdx ? 1 : 0, turns, n180 });
+    players.push({ idx, user_id: uid, rounds: n, won: winnerIdx.has(idx) ? 1 : 0, turns, n180 });
   });
 
   if (players.length < 2) errors.push('Mindestens zwei Spieler sind nötig.');
-  if (!players.some((p) => p.won)) errors.push('Es muss genau ein Gewinner gewählt sein.');
+  const winners = players.filter((p) => p.won);
+  if (!winners.length) errors.push('Es muss mindestens ein Gewinner gewählt sein.');
+  else if (new Set(winners.map((p) => p.rounds)).size > 1) {
+    errors.push('Mehrere Sieger sind nur bei gleicher Rundenzahl möglich.');
+  }
 
   // Aufnahmen gegen den Spielmodus prüfen
   if (mode) {

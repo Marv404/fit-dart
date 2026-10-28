@@ -8,6 +8,10 @@
 
 const MODE_FILTER = '(? IS NULL OR m.game_mode_id = ?)';
 
+// Punkte pro Wurf = Average / 3. Die Darts einer Aufnahme werden nicht erfasst,
+// die Zahl geht von drei Darts pro Aufnahme aus (beim Finish sind es evtl. weniger).
+const DARTS_PER_VISIT = 3;
+
 function turnTotals(db, userId, modeId = null) {
   const r = db
     .prepare(
@@ -27,7 +31,22 @@ function turnTotals(db, userId, modeId = null) {
         WHERE mp.user_id = ? AND ${MODE_FILTER}`
     )
     .get(userId, modeId, modeId).n;
-  return { ...r, n180, avg: r.visits ? r.points / r.visits : null };
+  // Verteilung der Aufnahmen und Start-Average (erste drei Aufnahmen = «First 9»)
+  const d = db
+    .prepare(
+      `SELECT MAX(t.punkte) AS best_visit,
+              COALESCE(SUM(t.punkte >= 60), 0) AS v60,
+              COALESCE(SUM(t.punkte >= 100), 0) AS v100,
+              COALESCE(SUM(t.punkte >= 140), 0) AS v140,
+              AVG(CASE WHEN t.rundennummer <= 3 THEN t.punkte END) AS first9
+         FROM turns t
+         JOIN match_players mp ON mp.id = t.match_player_id
+         JOIN matches m ON m.id = mp.match_id
+        WHERE mp.user_id = ? AND ${MODE_FILTER}`
+    )
+    .get(userId, modeId, modeId);
+  const avg = r.visits ? r.points / r.visits : null;
+  return { ...r, ...d, n180, avg, per_dart: avg === null ? null : avg / DARTS_PER_VISIT };
 }
 
 /** Höchstes Finish = letzte Aufnahme eines gewonnenen Spiels (nur Spiele mit Aufnahmen). */
@@ -80,6 +99,12 @@ function getUserStats(db, userId, modeId = null) {
     visits: t.visits,
     legs_with_turns: t.legs,
     avg: t.avg,
+    per_dart: t.per_dart,
+    first9: t.first9,
+    best_visit: t.best_visit,
+    v60: t.v60,
+    v100: t.v100,
+    v140: t.v140,
     n180: t.n180,
     best_finish: highestFinish(db, userId, modeId),
   };
@@ -138,7 +163,10 @@ function getLeaders(db, modeId = null) {
   );
 
   return rows
-    .map((r) => ({ ...r, avg: r.visits ? r.points / r.visits : null, best_finish: finishes.get(r.user_id) ?? null }))
+    .map((r) => {
+      const avg = r.visits ? r.points / r.visits : null;
+      return { ...r, avg, per_dart: avg === null ? null : avg / DARTS_PER_VISIT, best_finish: finishes.get(r.user_id) ?? null };
+    })
     .sort((a, b) => (b.avg ?? -1) - (a.avg ?? -1) || b.n180 - a.n180 || a.name.localeCompare(b.name));
 }
 
