@@ -162,7 +162,13 @@ form.inline input[type=text], form.inline select { width: auto; flex: 1 1 160px;
 .player-row label.n180 { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; color: var(--ink); }
 .player-row label.n180 input { width: 90px; }
 .player-row input.turns { grid-column: 1 / -1; font-size: .9rem; }
+.player-row .calc { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.player-row .calc[hidden] { display: none; }
+.calc-status { font-weight: 600; min-width: 130px; }
+.calc .calc-in { width: 110px; }
+.calc-msg { flex: 1 1 100%; }
 .hint { margin: 8px 0 0; }
+footer.foot { padding-bottom: 32px; text-align: center; }
 @media (min-width: 560px) {
   .player-row { grid-template-columns: 1fr 110px 150px auto; }
   .player-row .win { grid-column: auto; }
