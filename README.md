@@ -18,8 +18,11 @@ Entwicklung: `npm run dev` (Neustart bei Änderungen). Tests: `npm test`.
 
 ## Funktionen
 
+Aktuelle Version: 1.1.0, Änderungen siehe Changelog-Seite (`/changelog`, Daten in `services/changelog.js`). Bei einem Release dort einen Eintrag ergänzen und `version` in `package.json` anpassen.
+
 - Login mit Rollen Player und Admin, Rate-Limit, CSRF-Schutz
-- Spiel erfassen: Modus, Datum, 2 bis 8 Spieler mit Runden, ein Sieger
+- Spiel erfassen: Modus, Datum, 2 bis 8 Spieler mit Runden, ein Sieger (bei gleicher Rundenzahl mehrere Sieger)
+- Aufnahmen-Rechner (in jedem Modus): pro Spieler die geworfenen Punkte eingeben, Rest und Runden werden mitgezählt, überworfen zählt als 0. Ist ein Spieler auf 0, sind seine Runden fix und die Sieger (kleinste Rundenzahl, bei Gleichstand mehrere) werden automatisch gesetzt.
 - Aufnahmen (optional): die Punkte jeder Runde pro Spieler, z. B. `60 100 140 180 21`. Bust zählt als 0. Der Sieger muss genau den Startscore erreichen und mit einem gültigen Finish enden (bei Double Out nur Doppel, Bogey-Finishes wie 162 werden abgelehnt), unmögliche Aufnahmen (z. B. 179) werden abgewiesen. Sind Aufnahmen eingetragen, darf «Runden» leer bleiben.
 - Statistik: Average pro Aufnahme, 180er, höchstes Finish, bestes Leg, pro Modus filterbar, plus Übersicht aller Spieler. Average und 180er erscheinen auch auf Dashboard, Rangliste und im Spielverlauf. Gezählt werden nur Spiele mit erfassten Aufnahmen.
 - Spielverlauf mit Filter nach Modus und «nur meine Spiele»

@@ -37,8 +37,10 @@ function createApp(opts) {
   app.locals.bcryptRounds = bcryptRounds;
 
   // Helfer für die Templates
-  app.locals.pct = (q) => `${Math.round((q || 0) * 100)} %`;
+  app.locals.version = require('./package.json').version;
+  app.locals.pct =(q) => `${Math.round((q || 0) * 100)} %`;
   app.locals.num1 = (n) => (n === null || n === undefined ? '–' : Number(n).toFixed(1));
+  app.locals.num2 = (n) => (n === null || n === undefined ? '–' : Number(n).toFixed(2));
   app.locals.dateCH = (iso) => String(iso).split('-').reverse().join('.');
   app.locals.today = () => require('./services/validate').todayISO();
 
@@ -186,6 +188,7 @@ function createApp(opts) {
   app.use('/matches', requireLogin, require('./routes/matches')(db));
   app.use('/ranking', requireLogin, require('./routes/ranking')(db));
   app.use('/stats', requireLogin, require('./routes/stats')(db));
+  app.use('/changelog', requireLogin, require('./routes/changelog')());
   app.use('/account', requireLogin, require('./routes/account')(db, bcryptRounds));
   app.use('/admin', requireAdmin, require('./routes/admin')(db, bcryptRounds));
 
