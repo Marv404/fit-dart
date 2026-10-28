@@ -157,7 +157,14 @@ function validateMatch(body, db, { allowInactiveModeId = null } = {}) {
           errors.push(`${row}: ${last} ist als letzte Aufnahme kein gültiges Finish.`);
         }
       } else if (sum === mode.start_score) {
-        errors.push(`${row}: Dieser Spieler hat ${mode.start_score} erreicht, ist aber nicht als Sieger gewählt.`);
+        // Wer nach den Siegern (mit mehr Runden) fertig wirft, ist kein Fehler; gleich viele oder weniger Runden schon
+        if (winners.length && p.rounds > winners[0].rounds) {
+          if (!isValidFinish(last, mode.double_out)) {
+            errors.push(`${row}: ${last} ist als letzte Aufnahme kein gültiges Finish.`);
+          }
+        } else {
+          errors.push(`${row}: Dieser Spieler hat ${mode.start_score} in ${p.rounds} Runden erreicht, ist aber nicht als Sieger gewählt.`);
+        }
       }
     }
   }
