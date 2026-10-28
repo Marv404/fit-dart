@@ -13,8 +13,11 @@ module.exports = (db) => {
   // ---- Hilfsfunktionen ----------------------------------------------------
   const activeModes = (extraId) =>
     db
-      .prepare('SELECT id, name FROM game_modes WHERE aktiv = 1 OR id = ? ORDER BY name')
+      .prepare('SELECT id, name, start_score, double_out FROM game_modes WHERE aktiv = 1 OR id = ? ORDER BY name')
       .all(extraId ?? -1);
+
+  const winnersFromBody = (body) =>
+    toArray(body.winner).map((w) => Number.parseInt(w, 10)).filter(Number.isInteger);
 
   const selectableUsers = (extraIds = []) => {
     const all = db.prepare('SELECT id, name, aktiv FROM users ORDER BY name').all();
@@ -36,14 +39,14 @@ module.exports = (db) => {
     }));
   }
 
-  function renderForm(res, { status = 200, action, title, match, rows, winner, errors = [], canDelete = false }) {
+  function renderForm(res, { status = 200, action, title, match, rows, winners, errors = [], canDelete = false }) {
     const playerIds = rows.map((r) => Number.parseInt(r.user_id, 10)).filter(Number.isInteger);
     res.status(status).render('match-form', {
       action,
       title,
       match,
       rows,
-      winner,
+      winners,
       errors,
       canDelete,
       modes: activeModes(match.game_mode_id),
@@ -102,7 +105,7 @@ module.exports = (db) => {
       title: 'Spiel erfassen',
       match: { datum: todayISO(), game_mode_id: firstMode ? firstMode.id : null },
       rows,
-      winner: -1,
+      winners: [],
     });
   });
 
@@ -113,7 +116,7 @@ module.exports = (db) => {
     res.render('partials/player-row', {
       i,
       row: { user_id: '', rounds: '', turns: '', n180: '' },
-      winner: -1,
+      winners: [],
       users: selectableUsers(),
       maxRows: MAX_ROWS,
       withOob: true,
@@ -124,7 +127,6 @@ module.exports = (db) => {
     const me = req.session.user;
     const { errors, data } = validateMatch(req.body, db);
     const rows = rowsFromBody(req.body);
-    const winner = Number.parseInt(req.body.winner, 10);
 
     if (errors.length) {
       return renderForm(res, {
@@ -133,7 +135,7 @@ module.exports = (db) => {
         title: 'Spiel erfassen',
         match: { datum: String(req.body.datum || ''), game_mode_id: Number.parseInt(req.body.game_mode_id, 10) || null },
         rows,
-        winner: Number.isInteger(winner) ? winner : -1,
+        winners: winnersFromBody(req.body),
         errors,
       });
     }
@@ -165,7 +167,7 @@ module.exports = (db) => {
       title: `Spiel #${m.id} ändern`,
       match: m,
       rows,
-      winner: m.players.findIndex((p) => p.won),
+      winners: m.players.flatMap((p, i) => (p.won ? [i] : [])),
       canDelete: me.role === 'admin',
     });
   });
@@ -178,14 +180,13 @@ module.exports = (db) => {
     }
     const { errors, data } = validateMatch(req.body, db, { allowInactiveModeId: m.game_mode_id });
     if (errors.length) {
-      const winner = Number.parseInt(req.body.winner, 10);
       return renderForm(res, {
         status: 422,
         action: `/matches/${m.id}`,
         title: `Spiel #${m.id} ändern`,
         match: { ...m, datum: String(req.body.datum || ''), game_mode_id: Number.parseInt(req.body.game_mode_id, 10) || m.game_mode_id },
         rows: rowsFromBody(req.body),
-        winner: Number.isInteger(winner) ? winner : -1,
+        winners: winnersFromBody(req.body),
         errors,
         canDelete: me.role === 'admin',
       });
